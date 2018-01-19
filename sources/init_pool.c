@@ -1,6 +1,7 @@
+
 #include "threadpool.h"
 
-int		main(void)
+void	init(void)
 {
-	return (0);
+	;
 }

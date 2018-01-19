@@ -1,38 +1,16 @@
-EXENAME = ft_contrast
+NAME = libthreadpool.a
 
-LIBDIR = ./library
 ODIR = ./obj
+INCDIR = ./includes
+SRCDIR = ./sources
+HEADNAMES =	threadpool \
+			structures
+HEADERS = $(patsubst %, $(INCDIR)/%.h, $(HEADNAMES))
 
-# LIB
-
-LIBNAME = libft_thpool.a
-
-LIBSRCDIR = $(LIBDIR)/sources
-LIBINCDIR = $(LIBDIR)/includes
-
-LIBHEADNAMES =	ft_thpool \
-				structures
-LIBHEADERS = $(patsubst %, $(LIBINCDIR)/%.h, $(HEADNAMES))
-
-LIBFILENAMES =	get_next_line \
-				gnl_tools_memory \
-				gnl_tools_str \
-				tools_trash \
-				tools_t_line \
-				tools_t_ans_mass \
-				contrast \
-<<<<<<< HEAD
-				iterative \
-				ft_contrast
-=======
-				tools
->>>>>>> 37a201060cbbd90429b3a4b303329c50c02f372f
-LIBCFILES = $(patsubst %, $(LIBSRCDIR)/%.c, $(LIBFILENAMES))
-LIBOFILES = $(patsubst %, $(ODIR)/%.o, $(LIBFILENAMES))
-
-FLAGS = -Wall -Wextra -Werror #-lpthread
-
-# COLORS
+FILENAMES =	init_pool
+CFILES = $(patsubst %, $(SRCDIR)/%.c, $(FILENAMES))
+OFILES = $(patsubst %, $(ODIR)/%.o, $(FILENAMES))
+FLAGS = -O3
 
 BLACK = '\033[0;30m'
 RED = '\033[0;31m'
@@ -52,43 +30,29 @@ LCYAN = '\033[1;36m'
 WHITE = '\033[1;37m'
 NC = '\033[0m' # No Color
 
-all:
-	@make $(LIBNAME)
-	@make $(EXENAME)
+all: $(NAME)
 
-$(LIBNAME): $(ODIR) $(LIBOFILES) $(LIBHEADERS)
-	@echo ${CYAN}[Compiling $(LIBNAME)]${NC}
-	@ar rc $(LIBNAME) $(LIBOFILES)
-	@ranlib $(LIBNAME)
-	@echo ${GREEN}"[$(LIBNAME) is up to date.]"${NC}
+$(NAME): $(ODIR) $(OFILES) $(HEADERS)
+	@echo ${CYAN}[Compiling $(NAME)]${NC}
+	@ar rc $(NAME) $(OFILES)
+	@ranlib $(NAME)
+	@echo ${GREEN}"[========| $(NAME) is up to date. |========]"${NC}
 
-$(ODIR)/%.o: $(LIBSRCDIR)/%.c $(LIBHEADERS)
-	@gcc $(FLAGS) -o $@ -c $< -I$(LIBINCDIR)
+$(ODIR)/%.o: $(SRCDIR)/%.c $(HFILES)
+	gcc $(FLAGS) -o $@ -c $< -I$(INCDIR)
 
 $(ODIR):
 	@mkdir -p $(ODIR)
-	@mkdir -p $(ODIR)/$(LIBDIR)
-
-$(EXENAME): $(LIBNAME) main.c
-	@echo ${CYAN}[Compiling $(EXENAME)]${NC}
-	@gcc -o $(EXENAME) -I $(LIBINCDIR) -L. -lft_thpool main.c
-	@echo ${GREEN}"[========| $(EXENAME) is up to date. |========]"${NC}
-
-$(EXENAME): $(LIBNAME) iterative.c
-	@echo ${CYAN}[Compiling $(EXENAME)]${NC}
-	@gcc -o $(EXENAME) -I $(LIBINCDIR) -L. -lft_thpool main2.c
-	@echo ${GREEN}"[========| $(EXENAME) is up to date. |========]"${NC}
-
-# CLEANING
-
-clean:
-	@echo ${RED}[Removing *.o files]${NC}
-	@/bin/rm -rf $(ODIR)
 
 fclean: clean
-	@echo ${RED}[Removing $(LIBNAME)]${NC}
-	@/bin/rm -f $(LIBNAME)
-	@echo ${RED}[Removing $(EXENAME)]${NC}
-	@/bin/rm -f $(EXENAME)
+	@echo ${RED}[Removing $(NAME)]${NC}
+	@/bin/rm -f $(NAME)
+
+clean:
+	@echo ${RED}[Removing $(NAME) *.o files]${NC}
+	@/bin/rm -rf $(ODIR)
 
 re: fclean all
+
+main: $(NAME)
+	gcc -o e -I $(INCDIR) -L. -lthreadpool main.c
