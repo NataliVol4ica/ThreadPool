@@ -13,5 +13,6 @@ void		*thread_function(void *arg);
 
 void			malloc_error(void);
 void			thread_error(void);
+void			fork_error(void);
 
 #endif

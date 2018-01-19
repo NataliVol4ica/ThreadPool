@@ -25,10 +25,12 @@ typedef struct	s_queue
 
 typedef struct	s_thread_pool
 {
-	t_thread	**threads;
-	t_queue		*queue;
-	size_t		num_of_threads;
-	size_t		num_of_active_threads;
+	t_thread		*threads;
+	t_queue			*queue;
+	pthread_mutex_t	lock_num_of_threads;
+	volatile size_t	num_of_threads;
+	pthread_mutex_t	lock_num_of_active_threads;
+	volatile size_t	num_of_active_threads;
 }				t_thread_pool;
 
 #endif
