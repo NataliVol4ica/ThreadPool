@@ -7,9 +7,27 @@ void	*thread_function(void *arg)
 	t_thread_pool *pool;
 
 	pool = (t_thread_pool*)arg;
-	pthread_mutex_lock(&pool->lock_num_of_threads);
-	printf("Creating thread %zu\n", ++pool->num_of_threads);
-	pthread_mutex_unlock(&pool->lock_num_of_threads);
-	pthread_cond_signal(&pool->cond_num_of_threads);
+	change_mutex_var(&pool->num_of_threads, 1);
 	pthread_exit(NULL);
+}
+
+void	wait_cond(t_vars *var)
+{
+	pthread_cond_wait(&(*var).cond, &(*var).mutex);
+}
+
+void	change_mutex_var(t_vars *var, int val)
+{
+	pthread_mutex_lock(&(*var).mutex);
+	(*var).val += val;
+//	printf("Val got %zu\n", var->val);
+	pthread_cond_signal(&(*var).cond);
+	pthread_mutex_unlock(&(*var).mutex);
+}
+
+void	t_var_init(t_vars *var)
+{
+	(*var).val = 0;
+	pthread_mutex_init(&(*var).mutex, NULL);
+	pthread_cond_init(&(*var).cond, NULL);
 }

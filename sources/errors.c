@@ -19,9 +19,3 @@ void	fork_error(void)
 	write(1, "Fork creation fail. Exiting program\n", 38);
 	exit (1);
 }
-
-void	wait_child_fork_error(void)
-{
-	write(1, "Wait child fork fail. Exiting program\n", 38);
-	exit (1);	
-}
