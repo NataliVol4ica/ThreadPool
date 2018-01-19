@@ -28,6 +28,7 @@ typedef struct	s_thread_pool
 	t_thread		*threads;
 	t_queue			*queue;
 	pthread_mutex_t	lock_num_of_threads;
+	pthread_cond_t	cond_num_of_threads;
 	volatile size_t	num_of_threads;
 	pthread_mutex_t	lock_num_of_active_threads;
 	volatile size_t	num_of_active_threads;
