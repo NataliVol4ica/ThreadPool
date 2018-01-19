@@ -7,10 +7,12 @@ HEADNAMES =	threadpool \
 			structures
 HEADERS = $(patsubst %, $(INCDIR)/%.h, $(HEADNAMES))
 
-FILENAMES =	init_pool
+FILENAMES =	init_pool \
+			errors \
+			thread_maintenance
 CFILES = $(patsubst %, $(SRCDIR)/%.c, $(FILENAMES))
 OFILES = $(patsubst %, $(ODIR)/%.o, $(FILENAMES))
-FLAGS = -O3
+FLAGS = -pthread -O3
 
 BLACK = '\033[0;30m'
 RED = '\033[0;31m'
@@ -55,4 +57,4 @@ clean:
 re: fclean all
 
 main: $(NAME)
-	gcc -o e -I $(INCDIR) -L. -lthreadpool main.c
+	gcc -pthread -o e -I $(INCDIR) -L. -lthreadpool main.c
