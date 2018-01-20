@@ -4,6 +4,7 @@
 # include "structures.h"
 
 t_thread_pool	*create_thread_pool(size_t num_of_threads);
+void			stop_thread_pool(t_thread_pool	*pool);
 
 void			*thread_function(void *arg);
 void			wait_cond(t_vars *var);

@@ -18,22 +18,31 @@ t_thread_pool	*create_thread_pool(size_t num_of_threads)
 	MALL_ERROR(pool = (t_thread_pool*)malloc(sizeof(t_thread_pool)));
 	MALL_ERROR(pool->threads = (t_thread*)malloc(sizeof(t_thread) * num_of_threads));
 	pool->queue = NULL;
-	pool->num_of_threads.val = 0;
-	pool->num_of_active_threads.val = 0;
 	t_var_init(&(pool->num_of_threads));
 	t_var_init(&(pool->num_of_active_threads));
+	t_var_init(&(pool->awake_thread));
+	t_var_init(&(pool->quit_pool));
 	i = -1;
 	while (++i < num_of_threads)
-		THR_ERROR(rc = pthread_create(&pool->threads[i].thread, NULL, thread_function, pool));
+		THR_ERROR(rc = pthread_create(&pool->threads[i].thread, NULL, thread_function, pool));//starting all the threads
 	pthread_mutex_lock(&pool->num_of_threads.mutex);
 	while(pool->num_of_threads.val < num_of_threads)
-		wait_cond(&pool->num_of_threads);
+		pthread_cond_wait(&pool->num_of_threads.cond, &pool->num_of_threads.mutex);//waiting for all threads to be created
 	pthread_mutex_unlock(&pool->num_of_threads.mutex);
 	return (pool);
 }
 
 void			stop_thread_pool(t_thread_pool	*pool)
 {
+	size_t	i;
+
+	pthread_mutex_lock(&pool->quit_pool.mutex);
+	pool->quit_pool.val = 1;
+	pthread_cond_broadcast(&pool->awake_thread.cond);
+	pthread_mutex_unlock(&pool->quit_pool.mutex);
+	i = -1;
+	while (++i < pool->num_of_threads.val)
+		pthread_join(pool->threads[i].thread, NULL);
 	free(pool->threads);
 	free(pool);
 }

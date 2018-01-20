@@ -1,11 +1,14 @@
 
 #include "threadpool.h"
+#include <libc.h>
 
 int		main(void)
 {
 	t_thread_pool	*pool;
 
 	pool = create_thread_pool(4);
+    sleep(5);
+    stop_thread_pool(pool);
 	return (0);
 }
 

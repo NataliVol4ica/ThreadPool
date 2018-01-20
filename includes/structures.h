@@ -36,6 +36,8 @@ typedef struct	s_thread_pool
 	t_queue		*queue;
 	t_vars		num_of_threads;
 	t_vars		num_of_active_threads;
+	t_vars		awake_thread;
+	t_vars		quit_pool;
 }				t_thread_pool;
 
 #endif
