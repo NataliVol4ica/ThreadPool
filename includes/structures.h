@@ -17,12 +17,6 @@ typedef struct	s_task
 	struct s_task	*next_task;
 }				t_task;
 
-typedef struct	s_queue
-{
-	t_task	*first_task;
-	size_t	num_of_tasks;
-}				t_queue;
-
 typedef struct	s_vars
 {
 	pthread_mutex_t	mutex;
@@ -33,11 +27,12 @@ typedef struct	s_vars
 typedef struct	s_thread_pool
 {
 	t_thread	*threads;
-	t_queue		*queue;
+	t_task		*queue;
 	t_vars		num_of_threads;
 	t_vars		num_of_active_threads;
 	t_vars		awake_thread;
 	t_vars		quit_pool;
+	t_vars		queue_access;
 }				t_thread_pool;
 
 #endif

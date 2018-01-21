@@ -1,10 +1,12 @@
 
 #include "threadpool.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void	*thread_function(void *arg)
 {
 	t_thread_pool	*pool;
+	t_task			*temp;
 	size_t			id;
 
 	pool = (t_thread_pool*)arg;
@@ -15,17 +17,30 @@ void	*thread_function(void *arg)
 	pthread_mutex_unlock(&pool->num_of_threads.mutex);
 	while (1)
 	{
-		wait_cond(&pool->awake_thread);
+		change_mutex_var(&pool->num_of_active_threads, 1);
+		pthread_mutex_lock(&pool->queue_access.mutex);
+		if (pool->queue == NULL)	//if there is no task in queue
+		{
+			pthread_mutex_unlock(&pool->queue_access.mutex);
+			change_mutex_var(&pool->num_of_active_threads, -1);
+			wait_cond(&pool->awake_thread);
+		}
+		else
+		{
+			temp = pool->queue;
+			pool->queue = pool->queue->next_task;
+			pthread_mutex_unlock(&pool->queue_access.mutex);
+			temp->func(temp->param);
+			free(temp);
+		}
 		pthread_mutex_lock(&pool->quit_pool.mutex);
 		if (pool->quit_pool.val == 1)
 		{
 			pthread_mutex_unlock(&pool->quit_pool.mutex);
+			change_mutex_var(&pool->num_of_active_threads, -1);
 			break;
 		}
 		pthread_mutex_unlock(&pool->quit_pool.mutex);
-		change_mutex_var(&pool->num_of_active_threads, 1);
-		//run getting task from list here
-		change_mutex_var(&pool->num_of_active_threads, -1);
 	}
 	pthread_exit(NULL);
 }
