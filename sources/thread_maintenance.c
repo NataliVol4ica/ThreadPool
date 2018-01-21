@@ -13,34 +13,38 @@ void	*thread_function(void *arg)
 	pthread_mutex_lock(&pool->num_of_threads.mutex);
 	pool->num_of_threads.val += 1;
 	id = pool->num_of_threads.val;
+	printf("Thread %zu has been created\n", id);
 	pthread_cond_signal(&pool->num_of_threads.cond);
 	pthread_mutex_unlock(&pool->num_of_threads.mutex);
 	while (1)
 	{
-		change_mutex_var(&pool->num_of_active_threads, 1);
-		pthread_mutex_lock(&pool->queue_access.mutex);
-		if (pool->queue == NULL)	//if there is no task in queue
+		if (pool->queue)
 		{
-			pthread_mutex_unlock(&pool->queue_access.mutex);
-			change_mutex_var(&pool->num_of_active_threads, -1);
-			wait_cond(&pool->awake_thread);
-		}
-		else
-		{
+			change_mutex_var(&pool->num_of_active_threads, 1);
 			temp = pool->queue;
 			pool->queue = pool->queue->next_task;
 			pthread_mutex_unlock(&pool->queue_access.mutex);
 			temp->func(temp->param);
 			free(temp);
+			change_mutex_var(&pool->num_of_active_threads, -1);
+			continue ;
 		}
 		pthread_mutex_lock(&pool->quit_pool.mutex);
 		if (pool->quit_pool.val == 1)
 		{
+			printf("Thread %zu is quitting\n", id);
 			pthread_mutex_unlock(&pool->quit_pool.mutex);
-			change_mutex_var(&pool->num_of_active_threads, -1);
 			break;
 		}
 		pthread_mutex_unlock(&pool->quit_pool.mutex);
+		pthread_mutex_lock(&pool->queue_access.mutex);
+		if (pool->queue == NULL)	//if there is no task in queue
+		{
+			printf("Thread %zu going to sleep\n", id);
+			pthread_mutex_unlock(&pool->queue_access.mutex);
+			wait_cond(&pool->awake_thread);
+			printf("Thread %zu has awaken\n", id);
+		}
 	}
 	pthread_exit(NULL);
 }

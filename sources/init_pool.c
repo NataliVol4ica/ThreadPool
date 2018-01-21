@@ -30,6 +30,7 @@ t_thread_pool	*create_thread_pool(size_t num_of_threads)
 	while(pool->num_of_threads.val < num_of_threads)
 		pthread_cond_wait(&pool->num_of_threads.cond, &pool->num_of_threads.mutex);//waiting for all threads to be created
 	pthread_mutex_unlock(&pool->num_of_threads.mutex);
+	printf("Pool has been created\n");
 	return (pool);
 }
 
@@ -53,6 +54,7 @@ void			add_task(t_thread_pool *pool, void *(*func)(void*), void *param)
 			queue = queue->next_task;
 		queue->next_task = new;
 	}
+	printf("Adding queue task\n");
 	pthread_cond_signal(&pool->awake_thread.cond);
 	pthread_mutex_unlock(&pool->queue_access.mutex);
 	//do something. 
@@ -71,4 +73,5 @@ void			stop_thread_pool(t_thread_pool	*pool)
 		pthread_join(pool->threads[i].thread, NULL);
 	free(pool->threads);
 	free(pool);
+	printf("Pool has finished its existing\n");
 }

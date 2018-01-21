@@ -5,9 +5,11 @@
 int		main(void)
 {
 	t_thread_pool	*pool;
+    size_t  a = 0, b = 1000;
 
 	pool = create_thread_pool(4);
-    sleep(5);
+    add_task(pool, &counter_func, &a);
+    add_task(pool, &counter_func, &b);
     stop_thread_pool(pool);
 	return (0);
 }

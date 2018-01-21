@@ -5,6 +5,9 @@
 
 t_thread_pool	*create_thread_pool(size_t num_of_threads);
 void			stop_thread_pool(t_thread_pool	*pool);
+void			add_task(t_thread_pool *pool, void *(*func)(void*), void *param);
+
+void			*counter_func(void *param);
 
 void			*thread_function(void *arg);
 void			wait_cond(t_vars *var);

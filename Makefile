@@ -9,7 +9,8 @@ HEADERS = $(patsubst %, $(INCDIR)/%.h, $(HEADNAMES))
 
 FILENAMES =	init_pool \
 			errors \
-			thread_maintenance
+			thread_maintenance \
+			testfuncs
 CFILES = $(patsubst %, $(SRCDIR)/%.c, $(FILENAMES))
 OFILES = $(patsubst %, $(ODIR)/%.o, $(FILENAMES))
 FLAGS = -pthread -O3
