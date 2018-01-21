@@ -11,7 +11,7 @@ void	*counter_func(void *param)
 	from = *(size_t*)(param);
 	printf("Got %zu\n", from);
 	i = -1;
-	while (++i < 100)
+	while (++i < 10000)
 	{
 		from++;
 	}
